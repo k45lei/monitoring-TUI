@@ -8,26 +8,26 @@
 #include <math.h>
 #include <stdbool.h>
 
-int get_CORECOUNT(){
-	
-	// gets the core count used for init
-	
-	FILE *stat = fopen("/proc/stat", "r");
-	if (stat == NULL){
-		perror("failed to open /proc/stat");
-		return -1;
-	}
-	char buffer[256];
-	int count = 0;
-	while (fgets(buffer, sizeof(buffer), stat) != NULL){
-		if(strncmp(buffer, "cpu", 3) == 0 && isdigit((unsigned char)buffer[3]))
-			count++;
-	}
-	return count;
-}
+// int get_CORECOUNT(){
+// 	
+// 	// gets the core count used for init
+// 	
+// 	FILE *stat = fopen("/proc/stat", "r");
+// 	if (stat == NULL){
+// 		perror("failed to open /proc/stat");
+// 		return -1;
+// 	}
+// 	char buffer[256];
+// 	int count = 0;
+// 	while (fgets(buffer, sizeof(buffer), stat) != NULL){
+// 		if(strncmp(buffer, "cpu", 3) == 0 && isdigit((unsigned char)buffer[3]))
+// 			count++;
+// 	}
+// 	return count;
+// }
 
 
-void READ_PROC_LINE(COREinfo *cinfo, int core_count, bool before){ 
+void READ_PROC_LINE(COREinfo *cinfo, bool before){ 
 
 	// reads a single moment in time proc stat for all cores
 
@@ -35,78 +35,56 @@ void READ_PROC_LINE(COREinfo *cinfo, int core_count, bool before){
 	
 	
 	char buffer[256];
-	int core_num = 0;
+
+	int bora;
 	
 	if (before){
-		if(stat == NULL){
-			perror("Invalid FILE error");
-			return;
-		}
-		while (fgets(buffer, sizeof(buffer), stat) != NULL && core_num < core_count){
-			unsigned long long u, n, s, i, w, q, sq, st;
-			if(strncmp(buffer, "cpu", 3) == 0 && isdigit((unsigned char)buffer[3])) {
-				sscanf(buffer + 5,
-				"%llu %llu %llu %llu %llu %llu %llu %llu",
-				&u, &n, &s, &i, &w, &q, &sq, &st);
-				cinfo[core_num].user = u;
-				cinfo[core_num].nice = n;
-				cinfo[core_num].system = s;
-				cinfo[core_num].idle = i;
-				cinfo[core_num].iowait = w;
-				cinfo[core_num].irq = q;
-				cinfo[core_num].softirq = sq;
-				cinfo[core_num].steal = st; 
-				core_num++;
-			}
-		}
+		bora = BEFORE;
 	}
-	else if (!before){
-		if(stat == NULL){
-			perror("Invalid FILE error");
-			return;
-		}
+	else {
+		bora = AFTER;
+	}
+	if(stat == NULL){
+		perror("Invalid FILE error");
+		return;
+	}
+	else {
+		unsigned long long u, n, s, i, w, q, sq, st;
+		fgets(buffer, sizeof(buffer), stat);
 		
-		while (fgets(buffer, sizeof(buffer), stat) != NULL && core_num < core_count){
-			unsigned long long u, n, s, i, w, q, sq, st;
-			if(strncmp(buffer, "cpu", 3) == 0 && isdigit((unsigned char)buffer[3])) {
-				sscanf(buffer + 5,
-				"%llu %llu %llu %llu %llu %llu %llu %llu",
-				&u, &n, &s, &i, &w, &q, &sq, &st);
-				cinfo[core_num].user1 = u;
-				cinfo[core_num].nice1 = n;
-				cinfo[core_num].system1 = s;
-				cinfo[core_num].idle1 = i;
-				cinfo[core_num].iowait1 = w;
-				cinfo[core_num].irq1 = q;
-				cinfo[core_num].softirq1 = sq;
-				cinfo[core_num].steal1 = st; 
-				core_num++;
-			}
-		}
+		sscanf(buffer + 5,
+		"%llu %llu %llu %llu %llu %llu %llu %llu",
+		&u, &n, &s, &i, &w, &q, &sq, &st);
+		cinfo[bora].user = u;
+		cinfo[bora].nice = n;
+		cinfo[bora].system = s;
+		cinfo[bora].idle = i;
+		cinfo[bora].iowait = w;
+		cinfo[bora].irq = q;
+		cinfo[bora].softirq = sq;
+		cinfo[bora].steal = st; 
 	} 
 	fclose(stat);
 	stat = NULL;
 	return;
 }
 
-void CALC_P(COREinfo *cpu, int core_count){
+void CALC_P(COREinfo *cpu){
 
 	// takes in array of COREinfo struct and calculates the percentage for each
 
 	unsigned long long dtotal, dbusy, du, dn, ds, di, dw, dq, dsq, dst;
-	for (int i = 0; i < core_count; i++){
-		du = cpu[i].user1 - cpu[i].user;
-		dn = cpu[i].nice1 - cpu[i].nice;
-		ds = cpu[i].system1 - cpu[i].system;
-		di = cpu[i].idle1 - cpu[i].idle;
-		dw = cpu[i].iowait - cpu[i].iowait;
-		dsq = cpu[i].softirq1 - cpu[i].softirq;
-		dst = cpu[i].steal1- cpu[i].steal;
+	du = cpu[1].user - cpu[0].user;
+	dn = cpu[1].nice - cpu[0].nice;
+	ds = cpu[1].system - cpu[0].system;
+	di = cpu[1].idle - cpu[0].idle;
+	dw = cpu[1].iowait - cpu[0].iowait;
+	dq = cpu[1].irq - cpu[0].irq;
+	dsq = cpu[1].softirq - cpu[0].softirq;
+	dst = cpu[1].steal - cpu[0].steal;
 
-		dtotal = du + dn + ds + di + dw + dq + dsq + dst;
-		dbusy = dtotal - di - dw;
+	dtotal = du + dn + ds + di + dw + dq + dsq + dst;
+	dbusy = dtotal - di - dw;
 
-		cpu[i].percent = (dbusy / dtotal) * 100;
-	}
+	cpu[1].percent = (dtotal == 0) ? 0.0 : ((double)dbusy / (double)dtotal) * 100.0;
 }
-

@@ -19,6 +19,7 @@ void print_banner(const char *const *lines, size_t n, int color_cols) {
 //color_cols is the number of columns that are in a different color size 
     for (size_t i = 0; i < n; i++) {
         const char *line = lines[i];
+        if (!line) continue;
         size_t len = strlen(line);
 
         size_t colored = 0;

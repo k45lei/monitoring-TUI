@@ -14,32 +14,29 @@
 #include <stdlib.h>
 
 
-int main(void) {
+int main() {
     init();
-
-    int core_count = get_CORECOUNT();
-    COREinfo *cpus = calloc(core_count, sizeof(COREinfo));
-    READ_PROC_LINE(cpus, core_count, true);
-    usleep(100000);
-    READ_PROC_LINE(cpus, core_count, false);
-    CALC_P(cpus, core_count);
-
-    MEMinfo mem;
-    READ_MEM_PROC_LINE(&mem);
-    calcGiB(&mem);
-
-    double avg = 0;
-    for (int i = 0; i < core_count; i++) avg += cpus[i].percent;
-    avg /= core_count;
-
-    int cpu_cols = (int)((avg / 100.0) * (double)strlen(BANNER_CPU[0]));
-    int mem_cols = (int)((mem.usedGiB / mem.totalGiB) * (double)strlen(BANNER_MEMORY[0]));
-
-    print_banner(BANNER_LOGO, 6, 0);
-    print_banner(BANNER_CPU, 6, cpu_cols);
-    print_banner(BANNER_MEMORY, 6, mem_cols);
+	
+    COREinfo *cpus = malloc((AFTER+1)*sizeof(COREinfo));
+    MEMinfo *mem = malloc(sizeof(MEMinfo));
+    READ_PROC_LINE(cpus, true);
+    for (int i = 0; i < 30000; i++){
+	    usleep(10000);
+	    READ_PROC_LINE(cpus, false);
+	    CALC_P(cpus);
+	    READ_MEM_PROC_LINE(mem);
+	    calcGiB(mem);
+	    clear();
+	    int cpu_cols = (int)((((double)cpus[1].percent) / 100.00) * (double)strlen(BANNER_CPU[0]));
+	    int mem_cols = (int)((mem->usedGiB / mem->totalGiB) * (double)strlen(BANNER_MEMORY[0]));
+	    print_banner(BANNER_LOGO, N_ROW, DEFAULT);
+	    print_banner(BANNER_CPU, N_ROW, cpu_cols);
+	    print_banner(BANNER_MEMORY, N_ROW, mem_cols);
+	    refresh();
+   	}	
 
     end();
+    free(mem);
     free(cpus);
     return 0;
 }
