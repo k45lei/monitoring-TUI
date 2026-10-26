@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -O2
 LDLIBS = -lncursesw
 
 TARGET = display
-SRCS = display.c textCONST.c
+SRCS = display.c textCONST.c main.c memINFO.c cpuINFO.c
 
 all: $(TARGET)
 

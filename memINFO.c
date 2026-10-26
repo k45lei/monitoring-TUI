@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-typedef struct{
-	long totalKB, usedKB;
-	double totalGiB, usedGiB;
-} MEMinfo;
+#include "memINFO.h"
 
 void READ_MEM_PROC_LINE(MEMinfo *m){
 	FILE *mi = fopen("/proc/meminfo", "r");	

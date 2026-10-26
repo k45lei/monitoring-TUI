@@ -19,7 +19,7 @@ extern const char *BANNER_MEMORY[];
  * colored (no out-of-bounds reads).
  */
 void print_banner(const char *const *lines, size_t n, int color_cols) { 
-//color_cols is the number of columns that are in a different color
+//color_cols is the number of columns that are in a different color size 
     for (size_t i = 0; i < n; i++) {
         const char *line = lines[i];
         size_t len = strlen(line);
@@ -61,29 +61,4 @@ void end(){
 	endwin();
 }
 
-int main(void) {
-    setlocale(LC_ALL, "");
-    initscr();
-    cbreak();
-    noecho();
-    curs_set(0);
 
-    start_color();
-    init_pair(1, COLOR_RED, COLOR_BLACK);
-
-    size_t logo_n = 6;
-    size_t cpu_n = 6;
-    size_t mem_n = 6;
-
-    /* Pick how many leading columns you want in the alternate color. */
-    print_banner(BANNER_LOGO,   logo_n, 10);
-    print_banner(BANNER_CPU,    cpu_n,   5);
-    print_banner(BANNER_MEMORY, mem_n,   8);
-
-    printw("Press any key to exit...");
-    refresh();
-    getch();
-
-    endwin();
-    return 0;
-}
