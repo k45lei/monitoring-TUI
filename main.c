@@ -1,3 +1,7 @@
+#include "cpuINFO.h"
+#include "memINFO.h"
+#include "textCONST.h"
+#include "display.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -9,22 +13,6 @@
 #include <locale.h>
 #include <stdlib.h>
 
-typedef struct{ uint64_t user, nice, system, idle, iowait, irq, softirq, steal; uint64_t user1, nice1, system1, idle1, iowait1, irq1, softirq1, steal1; double percent; } COREinfo;
-typedef struct{ long totalKB, usedKB; double totalGiB, usedGiB; } MEMinfo;
-
-int get_CORECOUNT(void);
-void READ_PROC_LINE(COREinfo *cinfo, int core_count, bool before);
-void CALC_P(COREinfo *cpu, int core_count);
-void READ_MEM_PROC_LINE(MEMinfo *m);
-void calcGiB(MEMinfo *m);
-
-extern const char *BANNER_LOGO[];
-extern const char *BANNER_CPU[];
-extern const char *BANNER_MEMORY[];
-
-void print_banner(const char *const *lines, size_t n, int color_cols);
-void init(void);
-void end(void);
 
 int main(void) {
     init();

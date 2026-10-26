@@ -1,11 +1,8 @@
+#include "display.h"
 #include <ncurses.h>
 #include <locale.h>
 #include <stdlib.h>
 #include <string.h>
-
-extern const char *BANNER_LOGO[];
-extern const char *BANNER_CPU[];
-extern const char *BANNER_MEMORY[];
 
 /*
  * print_banner:
