@@ -8,26 +8,8 @@
 #include <math.h>
 #include <stdbool.h>
 
-// int get_CORECOUNT(){
-// 	
-// 	// gets the core count used for init
-// 	
-// 	FILE *stat = fopen("/proc/stat", "r");
-// 	if (stat == NULL){
-// 		perror("failed to open /proc/stat");
-// 		return -1;
-// 	}
-// 	char buffer[256];
-// 	int count = 0;
-// 	while (fgets(buffer, sizeof(buffer), stat) != NULL){
-// 		if(strncmp(buffer, "cpu", 3) == 0 && isdigit((unsigned char)buffer[3]))
-// 			count++;
-// 	}
-// 	return count;
-// }
 
-
-void READ_PROC_LINE(COREinfo *cinfo, bool before){ 
+void READ_PROC_LINE(COREinfo *cpu, bool before){ 
 
 	// reads a single moment in time proc stat for all cores
 
@@ -55,36 +37,48 @@ void READ_PROC_LINE(COREinfo *cinfo, bool before){
 		sscanf(buffer + 5,
 		"%llu %llu %llu %llu %llu %llu %llu %llu",
 		&u, &n, &s, &i, &w, &q, &sq, &st);
-		cinfo[bora].user = u;
-		cinfo[bora].nice = n;
-		cinfo[bora].system = s;
-		cinfo[bora].idle = i;
-		cinfo[bora].iowait = w;
-		cinfo[bora].irq = q;
-		cinfo[bora].softirq = sq;
-		cinfo[bora].steal = st; 
+		cpu[bora].user = u;
+		cpu[bora].nice = n;
+		cpu[bora].system = s;
+		cpu[bora].idle = i;
+		cpu[bora].iowait = w;
+		cpu[bora].irq = q;
+		cpu[bora].softirq = sq;
+		cpu[bora].steal = st; 
 	} 
 	fclose(stat);
 	stat = NULL;
 	return;
 }
 
-void CALC_P(COREinfo *cpu){
+void BECOME_BEFORE(COREinfo *cpu){
+	cpu[AFTER].user = cpu[BEFORE].user;
+	cpu[AFTER].nice = cpu[BEFORE].nice;
+	cpu[AFTER].system = cpu[BEFORE].system;
+	cpu[AFTER].idle = cpu[BEFORE].idle;
+	cpu[AFTER].iowait = cpu[BEFORE].iowait;
+	cpu[AFTER].irq = cpu[BEFORE].irq;
+	cpu[AFTER].softirq = cpu[BEFORE].softirq;
+	cpu[AFTER].steal = cpu[BEFORE].steal;
+}
+
+double CALC_P(COREinfo *cpu){
 
 	// takes in array of COREinfo struct and calculates the percentage for each
 
 	unsigned long long dtotal, dbusy, du, dn, ds, di, dw, dq, dsq, dst;
-	du = cpu[1].user - cpu[0].user;
-	dn = cpu[1].nice - cpu[0].nice;
-	ds = cpu[1].system - cpu[0].system;
-	di = cpu[1].idle - cpu[0].idle;
-	dw = cpu[1].iowait - cpu[0].iowait;
-	dq = cpu[1].irq - cpu[0].irq;
-	dsq = cpu[1].softirq - cpu[0].softirq;
-	dst = cpu[1].steal - cpu[0].steal;
+	du = cpu[AFTER].user - cpu[AFTER].user;
+	dn = cpu[AFTER].nice - cpu[AFTER].nice;
+	ds = cpu[AFTER].system - cpu[AFTER].system;
+	di = cpu[AFTER].idle - cpu[AFTER].idle;
+	dw = cpu[AFTER].iowait - cpu[AFTER].iowait;
+	dq = cpu[AFTER].irq - cpu[AFTER].irq;
+	dsq = cpu[AFTER].softirq - cpu[AFTER].softirq;
+	dst = cpu[AFTER].steal - cpu[AFTER].steal;
 
 	dtotal = du + dn + ds + di + dw + dq + dsq + dst;
 	dbusy = dtotal - di - dw;
 
-	cpu[1].percent = (dtotal == 0) ? 0.0 : ((double)dbusy / (double)dtotal) * 100.0;
+	return (dtotal == 0) ? 0.0 : ((double)dbusy / (double)dtotal) * 100.0;
 }
+

@@ -12,15 +12,13 @@
 
 typedef struct{
 	uint64_t user, nice, system, idle, iowait, irq, softirq, steal;
-	uint64_t user1, nice1, system1, idle1, iowait1, irq1, softirq1, steal1;
 	double percent;
 } COREinfo;
 
-// int get_CORECOUNT();
 
 
-void READ_PROC_LINE(COREinfo *cinfo, bool before);
+void READ_PROC_LINE(COREinfo *cpu, bool before);
 
-void BECOME_BEFORE(COREinfo *cinfo);
+void BECOME_BEFORE(COREinfo *cpu);
 
-void CALC_P(COREinfo *cpu);
+double CALC_P(COREinfo *cpu);
