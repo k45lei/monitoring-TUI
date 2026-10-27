@@ -67,14 +67,14 @@ double CALC_P(COREinfo *cpu){
 	// takes in array of COREinfo struct and calculates the percentage for each
 
 	unsigned long long dtotal, dbusy, du, dn, ds, di, dw, dq, dsq, dst;
-	du = cpu[AFTER].user - cpu[AFTER].user;
-	dn = cpu[AFTER].nice - cpu[AFTER].nice;
-	ds = cpu[AFTER].system - cpu[AFTER].system;
-	di = cpu[AFTER].idle - cpu[AFTER].idle;
-	dw = cpu[AFTER].iowait - cpu[AFTER].iowait;
-	dq = cpu[AFTER].irq - cpu[AFTER].irq;
-	dsq = cpu[AFTER].softirq - cpu[AFTER].softirq;
-	dst = cpu[AFTER].steal - cpu[AFTER].steal;
+	du = cpu[AFTER].user - cpu[BEFORE].user;
+	dn = cpu[AFTER].nice - cpu[BEFORE].nice;
+	ds = cpu[AFTER].system - cpu[BEFORE].system;
+	di = cpu[AFTER].idle - cpu[BEFORE].idle;
+	dw = cpu[AFTER].iowait - cpu[BEFORE].iowait;
+	dq = cpu[AFTER].irq - cpu[BEFORE].irq;
+	dsq = cpu[AFTER].softirq - cpu[BEFORE].softirq;
+	dst = cpu[AFTER].steal - cpu[BEFORE].steal;
 
 	dtotal = du + dn + ds + di + dw + dq + dsq + dst;
 	dbusy = dtotal - di - dw;
