@@ -14,9 +14,8 @@
 #include <ncurses.h>
 #include <locale.h>
 #include <stdlib.h>
-
-
 #include <sys/types.h>
+
 extern int usleep(useconds_t);
 
 static int visible_width(const wchar_t *s) {
@@ -50,9 +49,37 @@ void run(unsigned int usleep_time){
         erase();
         int cpu_cols = (int)(((double)cpu_percent / 100.0) * (double)visible_width(BANNER_CPU[0]));
         int mem_cols = (int)((mem->usedGiB / mem->totalGiB) * (double)visible_width(BANNER_MEMORY[0]));
+        
         print_banner(BANNER_LOGO, N_ROW, DEFAULT);
+
+// 		TODO: 
+// 		implement to have the percentage print inline with the cpu and memory banner respectively, 
+// 		do so by moving the cursor back to where the banner ends
+
+
+        /* ----- CPU ----- */
         print_banner(BANNER_CPU, N_ROW, cpu_cols);
+        // First row of the CPU banner block
+        int cpu_start_y = getcury(stdscr) - N_ROW;
+        int cpu_width   = visible_width(BANNER_CPU[0]);
+        // Move cursor to the column just after the banner and print the percentage
+        move(cpu_start_y - 1, cpu_width + 1);
+        int cpu_percent_int = (int)cpu_percent;
+        print_percent(cpu_percent_int);
+        // Return cursor to the line after the CPU banner block
+        move(cpu_start_y + N_ROW, 0);
+
+        /* ----- MEMORY ----- */
         print_banner(BANNER_MEMORY, N_ROW, mem_cols);
+        int mem_start_y = getcury(stdscr) - N_ROW;
+        int mem_width   = visible_width(BANNER_MEMORY[0]);
+        move(mem_start_y - 1, mem_width + 1);
+        int mem_percent_int = (int)((mem->usedGiB / mem->totalGiB) * 100.0);
+        print_percent(mem_percent_int);
+        // Position cursor after the memory banner block (optional)
+        move(mem_start_y + N_ROW, 0);
+
+
         refresh();
     }
     free(mem);

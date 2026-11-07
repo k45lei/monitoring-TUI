@@ -97,8 +97,15 @@ void print_percent(int percent){
         default: digit_ones = BANNER_ZERO; break;
     }
 
+    // Capture the column where the caller positioned the cursor.
+    int start_x = getcurx(stdscr);
+
     // Banners have N_ROW rows (defined in display.h)
     for (size_t row = 0; row < N_ROW; ++row) {
+        // Ensure we start each row at the original column, not column 0.
+        int cur_y = getcury(stdscr);
+        move(cur_y, start_x);
+
         const wchar_t *left = digit_tens[row];
         const wchar_t *right = digit_ones[row];
         // print left digit
@@ -113,7 +120,7 @@ void print_percent(int percent){
             setcchar(&wc, &right[j], A_NORMAL, 0, NULL);
             add_wch(&wc);
         }
-        // newline after each row
+        // newline after each row (moves cursor to column 0 of next line)
         cchar_t nl;
         setcchar(&nl, L"\n", A_NORMAL, 0, NULL);
         add_wch(&nl);

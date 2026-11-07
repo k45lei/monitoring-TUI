@@ -15,6 +15,6 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(TARGET) $(OBJS) $(SRCS:.c=.d)
+	rm -f $(OBJS) $(SRCS:.c=.d)
 
 .PHONY: all clean
