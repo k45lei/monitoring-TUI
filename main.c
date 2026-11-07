@@ -61,7 +61,7 @@ void run(unsigned int usleep_time){
 
 
 int main(int argc, char *argv[]) {
-    unsigned int usleep_time = 1000; // default 10ms
+    unsigned int usleep_time = 100000; // default 10ms
     // Parse arguments
     for (int i = 1; i < argc; ++i) {
         if ((strcmp(argv[i], "-t") == 0 || strcmp(argv[i], "--usleep") == 0) && i + 1 < argc) {

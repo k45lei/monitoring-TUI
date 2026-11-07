@@ -52,14 +52,14 @@ void READ_PROC_LINE(COREinfo *cpu, bool before){
 }
 
 void BECOME_BEFORE(COREinfo *cpu){
-	cpu[AFTER].user = cpu[BEFORE].user;
-	cpu[AFTER].nice = cpu[BEFORE].nice;
-	cpu[AFTER].system = cpu[BEFORE].system;
-	cpu[AFTER].idle = cpu[BEFORE].idle;
-	cpu[AFTER].iowait = cpu[BEFORE].iowait;
-	cpu[AFTER].irq = cpu[BEFORE].irq;
-	cpu[AFTER].softirq = cpu[BEFORE].softirq;
-	cpu[AFTER].steal = cpu[BEFORE].steal;
+	cpu[BEFORE].user = cpu[AFTER].user;
+	cpu[BEFORE].nice = cpu[AFTER].nice;
+	cpu[BEFORE].system = cpu[AFTER].system;
+	cpu[BEFORE].idle = cpu[AFTER].idle;
+	cpu[BEFORE].iowait = cpu[AFTER].iowait;
+	cpu[BEFORE].irq = cpu[AFTER].irq;
+	cpu[BEFORE].softirq = cpu[AFTER].softirq;
+	cpu[BEFORE].steal = cpu[AFTER].steal;
 }
 
 double CALC_P(COREinfo *cpu){
