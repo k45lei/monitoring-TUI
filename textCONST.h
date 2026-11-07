@@ -1,5 +1,5 @@
 #include <stddef.h>
 
-extern const char *BANNER_LOGO[];
-extern const char *BANNER_CPU[];
-extern const char *BANNER_MEMORY[];
+extern const wchar_t *BANNER_LOGO[];
+extern const wchar_t *BANNER_CPU[];
+extern const wchar_t *BANNER_MEMORY[];
