@@ -1,3 +1,6 @@
+#ifndef CPUINFO_H
+#define CPUINFO_H
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,3 +25,5 @@ void READ_PROC_LINE(COREinfo *cpu, bool before);
 void BECOME_BEFORE(COREinfo *cpu);
 
 double CALC_P(COREinfo *cpu);
+
+#endif // CPUINFO_H

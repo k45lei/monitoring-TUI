@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -MMD -MP
-LDLIBS = -lncursesw -lm
+CFLAGS = -Wall -Wextra -O2 -MMD -MP -pthread
+LDLIBS = -lncursesw -lm -pthread
 
 TARGET = monitor
 SRCS = display.c textCONST.c main.c memINFO.c cpuINFO.c
