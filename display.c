@@ -141,7 +141,9 @@ void init(){
 
 
 	start_color();
-	init_pair(1, COLOR_RED, COLOR_BLACK);
+	// Enable default terminal background (transparent)
+	use_default_colors();
+	init_pair(1, COLOR_BLUE, -1);
 }
 
 void end(){
