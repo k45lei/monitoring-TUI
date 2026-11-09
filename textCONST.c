@@ -29,6 +29,8 @@ const wchar_t *BANNER_MEMORY[] = {
 };
 
 /* Small numeric banners – each array contains six rows */
+
+
 const wchar_t *BANNER_ZERO[] = {
     L" ██████╗ ",
     L"██╔═████╗",
