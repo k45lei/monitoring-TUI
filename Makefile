@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -O2 -MMD -MP -pthread
 LDLIBS = -lncursesw -lm -pthread
 
 TARGET = monitor
-SRCS = display.c textCONST.c main.c memINFO.c cpuINFO.c
+SRCS = display.c textCONST.c main.c memINFO.c cpuINFO.c netINFO.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(TARGET)

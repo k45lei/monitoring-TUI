@@ -4,6 +4,7 @@
 #include <locale.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "textCONST.h"
 #include <wchar.h>
 
@@ -18,6 +19,9 @@ extern const wchar_t *BANNER_SIX[];
 extern const wchar_t *BANNER_SEVEN[];
 extern const wchar_t *BANNER_EIGHT[];
 extern const wchar_t *BANNER_NINE[];
+extern const wchar_t *BANNER_TX[];
+extern const wchar_t *BANNER_KB[];
+extern const wchar_t *BANNER_MB[];
 
 /*
  * print_banner:
@@ -58,6 +62,71 @@ void print_banner(const wchar_t *const *lines, size_t n, int color_cols) {
     setcchar(&nl2, L"\n", A_NORMAL, 0, NULL);
     add_wch(&nl2);
 }
+
+void print_bytes(int bytes){
+    // Determine appropriate unit and scale value.
+    // Use KB for >= 1,000 bytes, MB for >= 1,000,000 bytes.
+    const wchar_t *const *unit_banner = NULL; // banner to display after the number
+    int display_val = bytes;
+    if (bytes >= 1000000) {
+        display_val = bytes / 1000000; // megabytes
+        unit_banner = BANNER_MB;
+    } else if (bytes >= 1000) {
+        display_val = bytes / 1000; // kilobytes
+        unit_banner = BANNER_KB;
+    }
+
+    // Convert the integer value to a string of digits.
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%d", display_val);
+    size_t digit_count = strlen(buf);
+    const wchar_t *const *digit_arrays[32]; // per‑digit banner arrays
+    for (size_t i = 0; i < digit_count; ++i) {
+        switch (buf[i]) {
+            case '0': digit_arrays[i] = BANNER_ZERO; break;
+            case '1': digit_arrays[i] = BANNER_ONE; break;
+            case '2': digit_arrays[i] = BANNER_TWO; break;
+            case '3': digit_arrays[i] = BANNER_THREE; break;
+            case '4': digit_arrays[i] = BANNER_FOUR; break;
+            case '5': digit_arrays[i] = BANNER_FIVE; break;
+            case '6': digit_arrays[i] = BANNER_SIX; break;
+            case '7': digit_arrays[i] = BANNER_SEVEN; break;
+            case '8': digit_arrays[i] = BANNER_EIGHT; break;
+            case '9': digit_arrays[i] = BANNER_NINE; break;
+            default:  digit_arrays[i] = BANNER_ZERO; break; // safety fallback
+        }
+    }
+
+    // Render the numeric banners.
+    int start_x = getcurx(stdscr);
+    for (size_t row = 0; row < N_ROW; ++row) {
+        int cur_y = getcury(stdscr);
+        move(cur_y, start_x);
+        for (size_t d = 0; d < digit_count; ++d) {
+            const wchar_t *line = digit_arrays[d][row];
+            for (size_t j = 0; line && line[j]; ++j) {
+                cchar_t wc;
+                setcchar(&wc, &line[j], A_NORMAL, 0, NULL);
+                add_wch(&wc);
+            }
+        }
+        // newline after each banner row
+        cchar_t nl;
+        setcchar(&nl, L"\n", A_NORMAL, 0, NULL);
+        add_wch(&nl);
+    }
+    // Extra blank line after the number
+    cchar_t nl2;
+    setcchar(&nl2, L"\n", A_NORMAL, 0, NULL);
+    add_wch(&nl2);
+
+    // If a unit banner was selected, display it beneath the number.
+    if (unit_banner) {
+        // The unit banner is printed using the generic banner printer.
+        print_banner(unit_banner, N_ROW, 0);
+    }
+}
+
 
 void print_percent(int percent){
     // Display a two‑digit percentage using the BANNER_* digit arrays.
